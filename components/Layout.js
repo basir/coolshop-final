@@ -8,6 +8,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+
+import NextLink from 'next/link';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
@@ -82,25 +84,29 @@ export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
           className={classes.appBar}
         >
           <Toolbar className={classes.toolbar}>
-            <Link
-              variant="h6"
-              color="inherit"
-              noWrap
-              href="/"
-              className={classes.toolbarTitle}
-            >
-              {siteName}
-            </Link>
+            <NextLink href="/">
+              <Link
+                variant="h6"
+                color="inherit"
+                noWrap
+                href="/"
+                className={classes.toolbarTitle}
+              >
+                {siteName}
+              </Link>
+            </NextLink>
 
             <nav>
-              <Link
-                variant="button"
-                color="textPrimary"
-                href="/cart"
-                className={classes.link}
-              >
-                Cart
-              </Link>
+              <NextLink href="/cart">
+                <Link
+                  variant="button"
+                  color="textPrimary"
+                  href="/cart"
+                  className={classes.link}
+                >
+                  Cart
+                </Link>
+              </NextLink>
             </nav>
             {userInfo ? (
               <>
@@ -116,21 +122,24 @@ export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
                 >
                   <MenuItem onClick={(e) => setSignout(e)}>Sign Out</MenuItem>
                   <MenuItem>
-                    <Link color="primary" href="/profile">
-                      User Profile
-                    </Link>
+                    <NextLink href="/cart">
+                      <Link color="primary" href="/profile">
+                        User Profile
+                      </Link>
+                    </NextLink>
                   </MenuItem>
                 </Menu>
               </>
             ) : (
-              <Button
-                href="/signin"
-                color="primary"
-                variant="outlined"
-                className={classes.link}
-              >
-                Login
-              </Button>
+              <NextLink href="/signin">
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  className={classes.link}
+                >
+                  Login
+                </Button>
+              </NextLink>
             )}
           </Toolbar>
         </AppBar>
@@ -142,11 +151,8 @@ export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
         <Container maxWidth="md" component="footer">
           <Box mt={5}>
             <Typography variant="body2" color="textSecondary" align="center">
-              {'Copyright © '}
-              <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-              </Link>{' '}
-              {new Date().getFullYear()}
+              {'© '}
+              {siteName} {new Date().getFullYear()}
               {'.'}
             </Typography>
           </Box>
