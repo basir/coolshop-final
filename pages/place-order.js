@@ -106,7 +106,7 @@ function PlaceOrder() {
               </List>
             </Card>
 
-            <Card className={classes.marginTop}>
+            <Card className={classes.mt1}>
               <List>
                 <ListItem>
                   <Typography variant="h2">Payment Method</Typography>
@@ -149,7 +149,7 @@ function PlaceOrder() {
               </Grid>
             </Card>
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={3} xs={12}>
             <Card>
               <List>
                 <ListItem>

@@ -54,6 +54,9 @@ export const useStyles = makeStyles((theme) => ({
     maxWidth: '50rem',
     width: '100%',
   },
+  fullWidth: {
+    width: '100%',
+  },
   center: {
     margin: '0 auto',
     textAlign: 'center',

@@ -1,8 +1,10 @@
 import { calcCartSummary } from '../../utils';
+import { PayPalButton } from 'react-paypal-button-v2';
 import Cookies from 'js-cookie';
 
 import { Alert } from '@material-ui/lab';
 import {
+  Box,
   Button,
   Card,
   CircularProgress,
@@ -39,11 +41,20 @@ import { getResponseError } from '../../utils/error';
 function reducer(state, action) {
   switch (action.type) {
     case 'ORDER_DETAILS_REQUEST':
-      return { loading: true };
+      return { ...state, loading: true };
     case 'ORDER_DETAILS_SUCCESS':
-      return { order: action.payload };
+      return { ...state, loading: false, order: action.payload };
     case 'ORDER_DETAILS_FAIL':
-      return { error: action.payload };
+      return { ...state, loading: false, error: action.payload };
+
+    case 'ORDER_PAY_REQUEST':
+      return { ...state, loadingPay: true };
+    case 'ORDER_PAY_SUCCESS':
+      return { ...state, loadingPay: false, successPay: true };
+    case 'ORDER_PAY_FAIL':
+      return { ...state, loadingPay: false, errorPay: action.payload };
+    case 'ORDER_PAY_RESET':
+      return { ...state, loadingPay: false, successPay: false, errorPay: '' };
     default:
       return state;
   }
@@ -51,9 +62,17 @@ function reducer(state, action) {
 
 function Order({ params }) {
   const classes = useStyles();
+  const orderId = params.id;
 
-  const [{ loading, error, order }, dispatch] = React.useReducer(reducer, {
+  const [sdkReady, setSdkReady] = useState(false);
+  const [
+    { loading, error, order, loadingPay, errorPay, successPay },
+    dispatch,
+  ] = React.useReducer(reducer, {
     loading: true,
+    loadingPay: false,
+    successPay: false,
+    errorPay: '',
   });
 
   const { state } = useContext(Store);
@@ -66,7 +85,7 @@ function Order({ params }) {
     const fecthOrder = async () => {
       dispatch({ type: 'ORDER_DETAILS_REQUEST' });
       try {
-        const { data } = await Axios.get('/api/orders/' + params.id, {
+        const { data } = await Axios.get(`/api/orders/${orderId}`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'ORDER_DETAILS_SUCCESS', payload: data });
@@ -77,22 +96,70 @@ function Order({ params }) {
         });
       }
     };
-    fecthOrder();
-  }, []);
+    const addPayPalScript = async () => {
+      const { data } = await Axios.get('/api/keys/paypal', {
+        headers: { authorization: `Bearer ${userInfo.token}` },
+      });
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = `https://www.paypal.com/sdk/js?client-id=${data}`;
+      script.async = true;
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      document.body.appendChild(script);
+    };
+    if (
+      !order ||
+      successPay ||
+      // successDeliver ||
+      (order && order._id !== orderId)
+    ) {
+      fecthOrder();
+      dispatch({ type: 'ORDER_PAY_RESET' });
+      dispatch({ type: 'ORDER_DELIVER_RESET' });
+    } else {
+      if (!order.isPaid) {
+        if (!window.paypal) {
+          addPayPalScript();
+        } else {
+          setSdkReady(true);
+        }
+      }
+    }
+  }, [order, successPay]);
 
-  const payOrderHandler = async (e) => {
-    e.preventDefault();
-
+  const payOrderHandler = async (paymentResult) => {
+    dispatch({ type: 'ORDER_PAY_REQUEST' });
     try {
       const { data } = await Axios.put(
-        '/api/orders',
-        {},
-        { headers: { authorization: `Bearer ${userInfo.token}` } }
+        `/api/orders/${order._id}/pay`,
+        paymentResult,
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
       );
-      Router.push('/orders/' + data.order._id);
-    } catch (err) {
-      // setLoading(false);
-      // setError(getResponseError(err));
+      dispatch({ type: 'ORDER_PAY_SUCCESS', payload: data });
+    } catch (error) {
+      dispatch({ type: 'ORDER_PAY_FAIL', payload: getResponseError(error) });
+    }
+  };
+  const deliverOrderHandler = async (paymentResult) => {
+    dispatch({ type: 'ORDER_DELIVER_REQUEST' });
+    try {
+      const { data } = await Axios.put(
+        `/api/orders/${order._id}/deliver`,
+        {},
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      dispatch({ type: 'ORDER_DELIVER_SUCCESS', payload: data });
+    } catch (error) {
+      dispatch({
+        type: 'ORDER_DELIVER_FAIL',
+        payload: getResponseError(error),
+      });
     }
   };
 
@@ -134,7 +201,7 @@ function Order({ params }) {
                   </List>
                 </Card>
 
-                <Card className={classes.marginTop}>
+                <Card className={classes.mt1}>
                   <List>
                     <ListItem>
                       <Typography variant="h2">Payment Method</Typography>
@@ -240,21 +307,36 @@ function Order({ params }) {
                         </Grid>
                       </Grid>
                     </ListItem>
-                    <ListItem>
-                      <Button
-                        type="button"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        onClick={payOrderHandler}
-                      >
-                        Pay Order
-                      </Button>
-                    </ListItem>
-                    <ListItem>
-                      {loading && <CircularProgress></CircularProgress>}
-                      {error && <Alert severity="error">{error}</Alert>}
-                    </ListItem>
+                    {!order.isPaid && (
+                      <ListItem>
+                        {!sdkReady ? (
+                          <CircularProgress />
+                        ) : (
+                          <Box className={classes.fullWidth}>
+                            {errorPay && (
+                              <Alert severity="error">{errorPay}</Alert>
+                            )}
+                            {loadingPay && <CircularProgress />}
+
+                            <PayPalButton
+                              amount={order.totalPrice}
+                              onSuccess={payOrderHandler}
+                            ></PayPalButton>
+                          </Box>
+                        )}
+                      </ListItem>
+                    )}
+                    {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                      <ListItem>
+                        {errorDeliver && (
+                          <Alert severity="error">{errorDeliver}</Alert>
+                        )}
+                        {loadingDeliver && <CircularProgress />}
+                        <Button onClick={deliverOrderHandler}>
+                          Deliver Order
+                        </Button>
+                      </ListItem>
+                    )}
                   </List>
                 </Card>
               </Grid>
