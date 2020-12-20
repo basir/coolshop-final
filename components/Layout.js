@@ -1,7 +1,7 @@
 /* next.js head */
 import Head from 'next/head';
 
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,53 +10,30 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 
 import NextLink from 'next/link';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import theme from '../utils/theme';
+import { theme } from '../utils/styles';
 import { siteName } from '../utils/config';
 import { Menu, MenuItem } from '@material-ui/core';
-import { setSignout } from '../utils/auth';
+import { useStyles } from '../utils/styles';
+import { Store } from './Store';
+import { USER_SIGN_OUT } from '../utils/constants';
+import Router from 'next/router';
+import Cookies from 'js-cookie';
 
-const useStyles = makeStyles((theme) => ({
-  '@global': {
-    ul: {
-      margin: 0,
-      padding: 0,
-      listStyle: 'none',
-    },
-  },
-  appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  },
-  toolbar: {
-    flexWrap: 'wrap',
-  },
-  toolbarTitle: {
-    flexGrow: 1,
-  },
-  link: {
-    margin: theme.spacing(1, 1.5),
-  },
-  heroContent: {
-    padding: theme.spacing(8, 0, 6),
-  },
-  footer: {
-    borderTop: `1px solid ${theme.palette.divider}`,
-    marginTop: theme.spacing(8),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-    [theme.breakpoints.up('sm')]: {
-      paddingTop: theme.spacing(6),
-      paddingBottom: theme.spacing(6),
-    },
-  },
-}));
-
-export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
+export default function Layout({ children, title = 'NextJS Hello' }) {
   const classes = useStyles();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const { state, dispatch } = useContext(Store);
+  const { userInfo } = state;
+  const signoutHandler = () => {
+    dispatch({ type: USER_SIGN_OUT });
+    Cookies.remove('userInfo');
+    Router.push('/');
   };
 
   const handleClose = () => {
@@ -120,9 +97,9 @@ export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={(e) => setSignout(e)}>Sign Out</MenuItem>
+                  <MenuItem onClick={signoutHandler}>Sign Out</MenuItem>
                   <MenuItem>
-                    <NextLink href="/cart">
+                    <NextLink href="/profile">
                       <Link color="primary" href="/profile">
                         User Profile
                       </Link>
@@ -137,7 +114,7 @@ export default function Layout({ userInfo, children, title = 'NextJS Hello' }) {
                   variant="outlined"
                   className={classes.link}
                 >
-                  Login
+                  Sign In
                 </Button>
               </NextLink>
             )}

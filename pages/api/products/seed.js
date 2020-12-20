@@ -9,7 +9,6 @@ const handler = nextConnect({
   onError,
 });
 handler.get(async (req, res) => {
-  console.log('f');
   await dbConnect();
   const seller = await User.findOne({ isSeller: true });
   if (seller) {

@@ -4,28 +4,55 @@ import {
   CART_ADD_ITEM,
   CART_CLEAR,
   CART_REMOVE_ITEM,
+  CART_SET_PAYMENT,
+  CART_SET_SHIPPING,
+  USER_SIGN_IN,
+  USER_SIGN_OUT,
 } from './../utils/constants';
-const SCREEN_SET_WIDTH = 'SCREEN_SET_WIDTH';
 export const Store = createContext();
 const initialState = {
+  userInfo: Cookies.get('userInfo')
+    ? JSON.parse(Cookies.get('userInfo'))
+    : null,
   cart: {
     cartItems: Cookies.get('cartItems')
       ? JSON.parse(Cookies.get('cartItems'))
       : [],
     shippingAddress: {},
-    paymentMethod: 'PayPal',
-    taxPrice: 0,
-    totalPrice: 0,
-    itemsCount: 0,
+    paymentMethod: '',
   },
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case SCREEN_SET_WIDTH:
+    case USER_SIGN_IN:
       return {
         ...state,
-        widthScreen: true,
+        userInfo: action.payload,
+      };
+
+    case USER_SIGN_OUT:
+      return {
+        ...state,
+        userInfo: null,
+      };
+
+    case CART_SET_SHIPPING:
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingAddress: action.payload,
+        },
+      };
+
+    case CART_SET_PAYMENT:
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          paymentMethod: action.payload,
+        },
       };
 
     case CART_ADD_ITEM: {
@@ -36,23 +63,13 @@ function reducer(state, action) {
             x.name === existItem.name ? item : x
           )
         : [...state.cart.cartItems, item];
-
-      const itemsCount = cartItems.reduce((a, c) => a + c.quantity, 0);
-      const itemsPrice = cartItems.reduce(
-        (a, c) => a + c.quantity * c.price,
-        0
-      );
-      const taxPrice = Math.round(0.15 * itemsPrice * 100) / 100;
-      const totalPrice = Math.round((itemsPrice + taxPrice) * 100) / 100;
       Cookies.set('cartItems', JSON.stringify(cartItems));
+
       return {
         ...state,
         cart: {
           ...state.cart,
           cartItems,
-          taxPrice,
-          totalPrice,
-          itemsCount,
         },
       };
     }
@@ -60,22 +77,12 @@ function reducer(state, action) {
       const cartItems = state.cart.cartItems.filter(
         (x) => x.name !== action.payload.name
       );
-      const itemsCount = cartItems.reduce((a, c) => a + c.quantity, 0);
-      const itemsPrice = cartItems.reduce(
-        (a, c) => a + c.quantity * c.price,
-        0
-      );
-      const taxPrice = Math.round(0.15 * itemsPrice * 100) / 100;
-      const totalPrice = Math.round((itemsPrice + taxPrice) * 100) / 100;
-
+      Cookies.set('cartItems', JSON.stringify(cartItems));
       return {
         ...state,
         cart: {
           ...state.cart,
           cartItems,
-          taxPrice,
-          totalPrice,
-          itemsCount,
         },
       };
     }
@@ -84,9 +91,8 @@ function reducer(state, action) {
         ...state,
         cart: {
           cartItems: [],
-          taxPrice: 0,
-          totalPrice: 0,
-          itemsCount: 0,
+          shippingAddress: {},
+          paymentMethod: 'PayPal',
         },
       };
     default:

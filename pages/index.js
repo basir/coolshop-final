@@ -1,9 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { Alert } from '@material-ui/lab';
 import Layout from '../components/Layout';
-import { Store } from '../components/Store';
 import { dbConnect, convertDocToObj } from '../utils/db';
-import { setSignout } from '../utils/auth';
 import {
   Box,
   Card,
@@ -20,12 +19,13 @@ import { useStyles } from '../utils/styles';
 export default function Home(props) {
   const classes = useStyles();
   const { userInfo, products } = props;
-  const { state, dispatch } = useContext(Store);
-  const { widthScreen } = state;
 
   return (
     <Layout userInfo={userInfo} title="Home">
       <Grid container spacing={1}>
+        {products.length === 0 && (
+          <Alert severity="success">No product found</Alert>
+        )}
         {products.map((product) => (
           <Slide key={product.name} direction="up" in={true}>
             <Grid item md={3}>
@@ -69,9 +69,7 @@ export default function Home(props) {
 }
 export async function getServerSideProps() {
   await dbConnect();
-
   const productDocs = await Product.find({}).lean();
-
   const products = productDocs.map(convertDocToObj);
   return {
     props: { products },

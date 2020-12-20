@@ -18,11 +18,6 @@ const prodctSchema = new mongoose.Schema(
     },
     image: { type: String, required: true },
     images: [String],
-    seller: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
     brand: { type: String, required: true },
     price: { type: Number, default: 0, required: true },
     category: { type: String, required: true },

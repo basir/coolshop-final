@@ -18,19 +18,28 @@ import Product from '../../models/Product';
 import { useStyles } from '../../utils/styles';
 import { convertDocToObj } from '../../utils/db';
 import Layout from '../../components/Layout';
-import { addToOrder } from '../../utils/actions';
 import { Store } from '../../components/Store';
 import Router from 'next/router';
+import { CART_ADD_ITEM } from '../../utils/constants';
 
 export default function Home(props) {
   const classes = useStyles();
 
-  const { state, dispatch } = useContext(Store);
+  const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const { userInfo, product } = props;
   const addToCartHandler = () => {
     // add
-    addToOrder(dispatch, { ...product, quantity }, state.cart.cartItems);
+    dispatch({
+      type: CART_ADD_ITEM,
+      payload: {
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        countInStock: product.countInStock,
+        quantity,
+      },
+    });
     Router.push('/cart');
   };
 
@@ -82,7 +91,7 @@ export default function Home(props) {
                       Price
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography align="right">123</Typography>
+                      ${product.price}
                     </Grid>
                   </Grid>
                 </ListItem>
@@ -116,7 +125,7 @@ export default function Home(props) {
                           <Select
                             labelId="quanitity-label"
                             id="quanitity"
-                            className={classes.fullWidth}
+                            fullWidth
                             onChange={(e) => setQuantity(e.target.value)}
                             value={quantity}
                           >

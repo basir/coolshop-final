@@ -21,7 +21,7 @@ handler.post(async (req, res) => {
     const token = signToken(createdUser);
     res.status(200).json({
       success: true,
-      token: 'Bearer ' + token,
+      token: token,
     });
   } else {
     res.status(401).send({ message: 'Invalid User Data.' });

@@ -1,103 +1,67 @@
-import { makeStyles } from '@material-ui/core';
+import { createMuiTheme, makeStyles } from '@material-ui/core';
+export const theme = createMuiTheme({
+  typography: {
+    h1: {
+      fontSize: '2.2rem',
+      fontWeight: 400,
+      margin: '1rem 0',
+    },
+    h2: {
+      fontSize: '1.8rem',
+      fontWeight: 400,
+      margin: '1rem 0',
+    },
+  },
+  palette: {
+    primary: {
+      main: '#f0c000',
+    },
+    secondary: {
+      main: '#19857b',
+    },
+    error: {
+      main: '#f04000',
+    },
+    background: {
+      default: '#fff',
+    },
+  },
+});
 
 export const useStyles = makeStyles((theme) => ({
-  // Common
-  root: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
+  appBar: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
   },
-
-  textRight: {
-    textAlign: 'right',
+  toolbar: {
+    flexWrap: 'wrap',
   },
-  fullWidth: {
-    width: '100%',
+  toolbarTitle: {
+    flexGrow: 1,
   },
-
-  center: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
+  link: {
+    margin: theme.spacing(1, 1.5),
   },
-  column: { flexDirection: 'column' },
-  main: {
-    flex: 1,
-    overflow: 'auto',
-    flexDirection: 'column',
-    display: 'flex',
-    color: '#ffffff',
+  heroContent: {
+    padding: theme.spacing(8, 0, 6),
   },
-  navy: {
-    backgroundColor: '#003080',
-  },
-  green: {
-    backgroundColor: '#00b020',
-  },
-  footer: {},
-  // choose screen
-  cards: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  // order screen
-  red: {
-    backgroundColor: '#ff2040',
-    color: '#ffffff',
-  },
-  bordered: {
-    borderWidth: 2,
-    borderRadius: 5,
-    margin: 5,
-    borderStyle: 'solid',
-  },
-  row: {
-    display: 'flex',
-    padding: 10,
-  },
-  space: {
-    padding: 10,
-  },
-  around: {
-    justifyContent: 'space-around',
-  },
-  between: {
-    justifyContent: 'space-between',
-  },
-  largeButton: {
-    width: 250,
+  submit: {
+    margin: theme.spacing('1rem', 0, '1rem', 0),
   },
   smallImage: {
     width: 50,
   },
-  largeInput: {
-    width: '60px!important',
-    padding: '0!important',
-    fontSize: '35px!important',
-    textAlign: 'center!important',
+  center: {
+    margin: '0 auto',
+    textAlign: 'center',
   },
-
-  logo: {
-    height: 50,
+  form: {
+    maxWidth: 800,
+    margin: '0 auto',
   },
-  largeLogo: {
-    height: 100,
+  marginTop: {
+    marginTop: '1rem',
   },
-  title: {
-    marginTop: 18,
-  },
-  card: { margin: 10 },
-  media: { width: 200 },
-  ready: {
-    backgroundColor: '#003080',
-    color: '#ffffff',
-    marginTop: 0,
-  },
-  processing: {
-    backgroundColor: '#404040',
-    color: '#ffffff',
-    marginTop: 0,
+  space: {
+    padding: '1rem',
   },
 }));

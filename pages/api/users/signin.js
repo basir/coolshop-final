@@ -18,7 +18,10 @@ handler.post(async (req, res) => {
     const token = signToken(signedinUser);
     res.status(200).json({
       success: true,
-      token: 'Bearer ' + token,
+      name: signedinUser.name,
+      email: signedinUser.email,
+      isAdmin: signedinUser.isAdmin,
+      token: token,
     });
   } else {
     res.status(401).send({ message: 'Invalid User or Password' });
