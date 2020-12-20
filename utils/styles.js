@@ -4,7 +4,7 @@ export const theme = createMuiTheme({
     h1: {
       fontSize: '2.2rem',
       fontWeight: 400,
-      margin: '1rem 0',
+      margin: '2rem 0',
     },
     h2: {
       fontSize: '1.8rem',
@@ -17,13 +17,13 @@ export const theme = createMuiTheme({
       main: '#f0c000',
     },
     secondary: {
-      main: '#19857b',
+      main: '#208080',
     },
     error: {
       main: '#f04000',
     },
     background: {
-      default: '#fff',
+      default: '#ffffff',
     },
   },
 });
@@ -39,29 +39,36 @@ export const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   link: {
-    margin: theme.spacing(1, 1.5),
+    margin: '1rem',
   },
-  heroContent: {
-    padding: theme.spacing(8, 0, 6),
+  main: {
+    padding: '1rem',
   },
   submit: {
-    margin: theme.spacing('1rem', 0, '1rem', 0),
+    margin: '1rem 0 1rem 0',
   },
   smallImage: {
-    width: 50,
+    width: '3rem',
+  },
+  largeImage: {
+    maxWidth: '50rem',
+    width: '100%',
   },
   center: {
     margin: '0 auto',
     textAlign: 'center',
   },
   form: {
-    maxWidth: 800,
+    maxWidth: '60rem',
     margin: '0 auto',
   },
-  marginTop: {
+  mt1: {
     marginTop: '1rem',
   },
-  space: {
+  p1: {
     padding: '1rem',
+  },
+  p0: {
+    padding: '0',
   },
 }));

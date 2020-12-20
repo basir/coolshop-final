@@ -48,9 +48,13 @@ export default function Home(props) {
       <Slide key={product.name} direction="up" in={true}>
         <Grid container spacing={1}>
           <Grid item md={6}>
-            <img src={product.image} alt={product.name} />
+            <img
+              src={product.image}
+              alt={product.name}
+              className={classes.largeImage}
+            />
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={3} xs={12}>
             <List>
               <ListItem>
                 <Typography
@@ -82,7 +86,7 @@ export default function Home(props) {
               </ListItem>
             </List>
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={3} xs={12}>
             <Card className={classes.card}>
               <List>
                 <ListItem>

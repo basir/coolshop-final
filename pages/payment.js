@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Router from 'next/router';
@@ -19,6 +20,7 @@ import { CART_SET_PAYMENT, CART_SET_SHIPPING } from '../utils/constants';
 import dynamic from 'next/dynamic';
 
 function Payemnt() {
+  const [error, setError] = useState('');
   const { state, dispatch } = useContext(Store);
   const { shippingAddress } = state.cart;
 
@@ -32,11 +34,15 @@ function Payemnt() {
   const classes = useStyles();
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch({
-      type: CART_SET_PAYMENT,
-      payload: paymentMethod,
-    });
-    Router.push('/place-order');
+    if (!paymentMethod) {
+      setError('Error. Select a payment method.');
+    } else {
+      dispatch({
+        type: CART_SET_PAYMENT,
+        payload: paymentMethod,
+      });
+      Router.push('/place-order');
+    }
   };
 
   return (
@@ -80,6 +86,8 @@ function Payemnt() {
         >
           Continue
         </Button>
+
+        {error && <Alert severity="error">{error}</Alert>}
       </form>
     </Layout>
   );

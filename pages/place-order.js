@@ -114,7 +114,7 @@ function PlaceOrder() {
                 <ListItem>{paymentMethod}</ListItem>
               </List>
             </Card>
-            <Card className={[classes.marginTop, classes.space]}>
+            <Card className={[classes.mt1, classes.p1]}>
               <Typography variant="h2">Order Items</Typography>
               <Grid container>
                 <TableContainer>

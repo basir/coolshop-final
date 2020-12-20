@@ -1,9 +1,11 @@
 import { Step, StepLabel, Stepper } from '@material-ui/core';
 import React from 'react';
+import { useStyles } from '../utils/styles';
 
 export default function CheckoutSteps({ activeStep = 0 }) {
+  const classes = useStyles();
   return (
-    <Stepper activeStep={activeStep}>
+    <Stepper activeStep={activeStep} className={classes.p0}>
       <Step>
         <StepLabel>Sign-In</StepLabel>
       </Step>

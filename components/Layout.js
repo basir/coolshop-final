@@ -121,7 +121,7 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
           </Toolbar>
         </AppBar>
         {/* Hero unit */}
-        <Container component="main" className={classes.heroContent}>
+        <Container component="main" className={classes.main}>
           {children}
         </Container>
         {/* End hero unit */}

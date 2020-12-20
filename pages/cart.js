@@ -131,7 +131,7 @@ function Cart(props) {
                                 variant="contained"
                                 color="secondary"
                               >
-                                Remove
+                                x
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -141,7 +141,7 @@ function Cart(props) {
                   </TableContainer>
                 </Grid>
               </Grid>
-              <Grid item md={3}>
+              <Grid item md={3} xs={12}>
                 <Card className={classes.card}>
                   <List>
                     <ListItem>

@@ -105,7 +105,7 @@ function Order({ params }) {
       ) : (
         <React.Fragment>
           <Typography component="h1" variant="h1">
-            Order {order._id}
+            Order ...{order._id.substring(20, 24)}
           </Typography>
           <Slide direction="up" in={true}>
             <Grid container spacing={1}>
@@ -149,7 +149,7 @@ function Order({ params }) {
                     </ListItem>
                   </List>
                 </Card>
-                <Card className={[classes.marginTop, classes.space]}>
+                <Card className={[classes.mt1, classes.p1]}>
                   <Typography variant="h2">Order Items</Typography>
                   <Grid container>
                     <TableContainer>
@@ -186,7 +186,7 @@ function Order({ params }) {
                   </Grid>
                 </Card>
               </Grid>
-              <Grid item md={3}>
+              <Grid item md={3} xs={12}>
                 <Card>
                   <List>
                     <ListItem>

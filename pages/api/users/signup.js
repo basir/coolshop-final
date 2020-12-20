@@ -21,6 +21,9 @@ handler.post(async (req, res) => {
     const token = signToken(createdUser);
     res.status(200).json({
       success: true,
+      name: createdUser.name,
+      email: createdUser.email,
+      isAdmin: createdUser.isAdmin,
       token: token,
     });
   } else {
