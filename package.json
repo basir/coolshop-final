@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "export": "next export"
+    "start": "next start", 
+    "postbuild": "next-on-netlify"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.2",
@@ -19,6 +19,7 @@
     "mongoose": "^5.11.7",
     "next": "10.0.3",
     "next-connect": "^0.9.1",
+    "next-on-netlify": "^2.6.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-paypal-button-v2": "^2.6.2",
