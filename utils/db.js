@@ -9,7 +9,7 @@ export const dbConnect = async () => {
     return;
   }
 
-  /* connecting to our database */
+  /* connecting to our database.  */
   const db = await mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
