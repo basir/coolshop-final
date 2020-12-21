@@ -20,10 +20,12 @@ export const dbConnect = async () => {
 };
 
 export const dbDisconnect = async () => {
+  console.log(connection);
   if (connection.isConnected) {
     // connection.close(() => {
     //   console.log('disconnected');
     // });
+    connection.isConnected = false;
     await mongoose.disconnect();
     //console.log(connection.disconnect());
   }
