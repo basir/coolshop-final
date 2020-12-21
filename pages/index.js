@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Alert } from '@material-ui/lab';
 import Layout from '../components/Layout';
-import { dbConnect, convertDocToObj } from '../utils/db';
+import { dbConnect, dbDisconnect, convertDocToObj } from '../utils/db';
 import {
   Box,
   Card,
@@ -70,6 +70,7 @@ export default function Home(props) {
 export async function getServerSideProps() {
   await dbConnect();
   const productDocs = await Product.find({}).lean();
+  await dbDisconnect();
   const products = productDocs.map(convertDocToObj);
   return {
     props: { products },

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import Rating from '@material-ui/lab/Rating';
 import { Alert } from '@material-ui/lab';
-import { dbConnect } from '../../utils/db';
+import { dbConnect, dbDisconnect } from '../../utils/db';
 import {
   Box,
   Button,
@@ -168,6 +168,7 @@ export default function Home(props) {
 export async function getServerSideProps({ params }) {
   await dbConnect();
   const productDoc = await Product.findById(params.id).lean();
+  await dbDisconnect();
   const product = convertDocToObj(productDoc);
   return {
     props: { product },

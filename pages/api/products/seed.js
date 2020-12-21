@@ -1,7 +1,7 @@
 import nextConnect from 'next-connect';
 import User from '../../../models/User';
 import { onError } from '../../../utils/error';
-import { dbConnect } from '../../../utils/db';
+import { dbConnect, dbDisconnect } from '../../../utils/db';
 import data from '../../../utils/data';
 import Product from '../../../models/Product';
 
@@ -17,8 +17,10 @@ handler.get(async (req, res) => {
       seller: seller._id,
     }));
     const createdProducts = await Product.insertMany(products);
+    await dbDisconnect();
     res.send({ createdProducts });
   } else {
+    await dbDisconnect();
     res
       .status(500)
       .send({ message: 'No seller found. first run /api/users/seed' });

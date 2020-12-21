@@ -18,6 +18,16 @@ export const dbConnect = async () => {
 
   connection.isConnected = db.connections[0].readyState;
 };
+
+export const dbDisconnect = async () => {
+  if (connection.isConnected) {
+    // connection.close(() => {
+    //   console.log('disconnected');
+    // });
+    await mongoose.disconnect();
+    //console.log(connection.disconnect());
+  }
+};
 export const convertDocToObj = (doc) => {
   doc._id = doc._id.toString();
   doc.seller = doc.seller.toString();
