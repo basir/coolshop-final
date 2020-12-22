@@ -8,6 +8,7 @@ const handler = nextConnect({
   onError,
 });
 handler.use(isAuth).get(async (req, res) => {
+  console.log('/api/orders/id log');
   await dbConnect();
   const order = await Order.findById(req.query.id);
   await dbDisconnect();

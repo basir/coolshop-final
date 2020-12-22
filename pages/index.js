@@ -68,6 +68,7 @@ export default function Home(props) {
   );
 }
 export async function getServerSideProps() {
+  console.log('pages/index.js log');
   await dbConnect();
   const productDocs = await Product.find({}).lean();
   await dbDisconnect();
