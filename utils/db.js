@@ -21,7 +21,7 @@ export const dbConnect = async () => {
 
 export const dbDisconnect = async () => {
   console.log(process.env.NODE_ENV);
-  if (process.env.NODE_ENV === ' production') {
+  if (process.env.NODE_ENV === 'production') {
     if (connection.isConnected) {
       connection.isConnected = false;
       await mongoose.disconnect();
