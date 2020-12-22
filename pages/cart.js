@@ -174,16 +174,6 @@ function Cart(props) {
     </Layout>
   );
 }
-export async function getServerSideProps() {
-  await dbConnect();
-
-  const productDocs = await Product.find({}).lean();
-
-  const products = productDocs.map(convertDocToObj);
-  return {
-    props: { products },
-  };
-}
 export default dynamic(() => Promise.resolve(Cart), {
   ssr: false,
 });

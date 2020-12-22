@@ -20,16 +20,15 @@ export const dbConnect = async () => {
 };
 
 export const dbDisconnect = async () => {
-  console.log(connection);
-  if (connection.isConnected) {
-    // connection.close(() => {
-    //   console.log('disconnected');
-    // });
-    connection.isConnected = false;
-    await mongoose.disconnect();
-    //console.log(connection.disconnect());
+  console.log(process.env.NODE_ENV);
+  if (process.env.NODE_ENV === ' production') {
+    if (connection.isConnected) {
+      connection.isConnected = false;
+      await mongoose.disconnect();
+    }
   }
 };
+
 export const convertDocToObj = (doc) => {
   doc._id = doc._id.toString();
   doc.seller = doc.seller.toString();
