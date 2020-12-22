@@ -326,17 +326,20 @@ function Order({ params }) {
                         )}
                       </ListItem>
                     )}
-                    {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
-                      <ListItem>
-                        {errorDeliver && (
-                          <Alert severity="error">{errorDeliver}</Alert>
-                        )}
-                        {loadingDeliver && <CircularProgress />}
-                        <Button onClick={deliverOrderHandler}>
-                          Deliver Order
-                        </Button>
-                      </ListItem>
-                    )}
+                    {userInfo &&
+                      userInfo.isAdmin &&
+                      order.isPaid &&
+                      !order.isDelivered && (
+                        <ListItem>
+                          {errorDeliver && (
+                            <Alert severity="error">{errorDeliver}</Alert>
+                          )}
+                          {loadingDeliver && <CircularProgress />}
+                          <Button onClick={deliverOrderHandler}>
+                            Deliver Order
+                          </Button>
+                        </ListItem>
+                      )}
                   </List>
                 </Card>
               </Grid>

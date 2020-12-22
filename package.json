@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start", 
+    "start": "next start",
     "postbuild": "next-on-netlify"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "next": "10.0.3",
     "next-connect": "^0.9.1",
     "next-on-netlify": "^2.6.3",
+    "nprogress": "^0.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-paypal-button-v2": "^2.6.2",

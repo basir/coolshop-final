@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { Alert } from '@material-ui/lab';
 import Layout from '../components/Layout';
 import { Store } from '../components/Store';
-import { dbConnect, convertDocToObj } from '../utils/db';
 import {
   Button,
   Card,
@@ -20,7 +19,6 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-import Product from '../models/Product';
 import { useStyles } from '../utils/styles';
 import { calcCartSummary } from '../utils';
 import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../utils/constants';
@@ -29,9 +27,6 @@ import Link from 'next/link';
 import Router from 'next/router';
 
 function Cart(props) {
-  if (typeof window === 'undefined') {
-    return null;
-  }
   const classes = useStyles();
   const { userInfo } = props;
   const { state, dispatch } = useContext(Store);
