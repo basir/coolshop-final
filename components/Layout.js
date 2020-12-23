@@ -24,9 +24,6 @@ import Cookies from 'js-cookie';
 
 export default function Layout({ children, title = 'NextJS Hello' }) {
   const classes = useStyles();
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
@@ -36,10 +33,21 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
     Router.push('/');
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const [userMenuElement, setUserMenuElement] = React.useState(null);
+  const userMenuOpenHandler = (event) => {
+    setUserMenuElement(event.currentTarget);
   };
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const userMenuCloseHandler = () => {
+    setUserMenuElement(null);
+  };
+
+  const [adminMenuElement, setAdminMenuElement] = React.useState(null);
+  const adminMenuOpenHandler = (event) => {
+    setAdminMenuElement(event.currentTarget);
+  };
+  const adminMenuCloseHandler = () => {
+    setAdminMenuElement(null);
+  };
   return (
     <React.Fragment>
       <Head>
@@ -87,17 +95,16 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
             </nav>
             {userInfo ? (
               <>
-                <Button aria-controls="simple-menu" onClick={handleClick}>
+                <Button aria-controls="user-menu" onClick={userMenuOpenHandler}>
                   {userInfo.name}
                 </Button>
                 <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
+                  id="user-menu"
+                  anchorEl={userMenuElement}
                   keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
+                  open={Boolean(userMenuElement)}
+                  onClose={userMenuCloseHandler}
                 >
-                  <MenuItem onClick={signoutHandler}>Sign Out</MenuItem>
                   <MenuItem>
                     <NextLink href="/profile">
                       <Link color="primary" href="/profile">
@@ -109,6 +116,42 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
                     <NextLink href="/order-history">
                       <Link color="primary" href="/order-history">
                         Order History
+                      </Link>
+                    </NextLink>
+                  </MenuItem>
+                  <MenuItem onClick={signoutHandler}>Sign Out</MenuItem>
+                </Menu>
+                <Button
+                  aria-controls="admin-menu"
+                  onClick={adminMenuOpenHandler}
+                >
+                  Admin
+                </Button>
+                <Menu
+                  id="admin-menu"
+                  anchorEl={adminMenuElement}
+                  keepMounted
+                  open={Boolean(adminMenuElement)}
+                  onClose={adminMenuCloseHandler}
+                >
+                  <MenuItem>
+                    <NextLink href="/admin/orders">
+                      <Link color="primary" href="/admin/orders">
+                        Orders
+                      </Link>
+                    </NextLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NextLink href="/admin/products">
+                      <Link color="primary" href="/admin/products">
+                        Products
+                      </Link>
+                    </NextLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NextLink href="/admin/users">
+                      <Link color="primary" href="/admin/users">
+                        Users
                       </Link>
                     </NextLink>
                   </MenuItem>

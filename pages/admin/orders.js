@@ -1,7 +1,3 @@
-import { calcCartSummary } from '../utils';
-import { PayPalButton } from 'react-paypal-button-v2';
-import Cookies from 'js-cookie';
-
 import { Alert } from '@material-ui/lab';
 import {
   Button,
@@ -16,12 +12,12 @@ import {
   Typography,
 } from '@material-ui/core';
 import React, { useContext, useEffect } from 'react';
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import Router from 'next/router';
-import { Store } from '../components/Store';
+import { Store } from '../../components/Store';
 import dynamic from 'next/dynamic';
 import Axios from 'axios';
-import { getResponseError } from '../utils/error';
+import { getResponseError } from '../../utils/error';
 import Link from 'next/link';
 
 function reducer(state, action) {
@@ -32,14 +28,34 @@ function reducer(state, action) {
       return { ...state, loading: false, orders: action.payload };
     case 'ORDER_HISTORY_FAIL':
       return { ...state, loading: false, error: action.payload };
+
+    case 'ORDER_DELETE_REQUEST':
+      return { ...state, loadingDelete: true };
+    case 'ORDER_DELETE_SUCCESS':
+      return { ...state, loadingDelete: false, successDelete: true };
+    case 'ORDER_DELETE_FAIL':
+      return { ...state, loadingDelete: false, errorDelete: action.payload };
+    case 'ORDER_DELETE_RESET':
+      return {
+        ...state,
+        loadingDelete: false,
+        successDelete: false,
+        errorDelete: '',
+      };
     default:
       return state;
   }
 }
 
 function Order() {
-  const [{ loading, error, orders }, dispatch] = React.useReducer(reducer, {
+  const [
+    { loading, error, orders, loadingDelete, errorDelete, successDelete },
+    dispatch,
+  ] = React.useReducer(reducer, {
     loading: true,
+    loadingDelete: false,
+    successDelete: false,
+    errorDelete: '',
   });
 
   const { state } = useContext(Store);
@@ -64,7 +80,19 @@ function Order() {
       }
     };
     fecthOrders();
-  }, []);
+  }, [successDelete]);
+
+  const deleteOrderHandler = async (order) => {
+    dispatch({ type: 'ORDER_DELETE_REQUEST' });
+    try {
+      const { data } = await Axios.delete(`/api/orders/${order._id}/delete`, {
+        headers: { authorization: `Bearer ${userInfo.token}` },
+      });
+      dispatch({ type: 'ORDER_DELETE_SUCCESS', payload: data });
+    } catch (error) {
+      dispatch({ type: 'ORDER_DELETE_FAIL', payload: getResponseError(error) });
+    }
+  };
 
   return (
     <Layout title="Place Order">
@@ -75,8 +103,14 @@ function Order() {
       ) : (
         <React.Fragment>
           <Typography component="h1" variant="h1">
-            Order History
+            Admin Orders
           </Typography>
+          {errorDelete && <Alert severity="error">{errorDelete}</Alert>}
+          {loadingDelete && <CircularProgress />}
+          {successDelete && (
+            <Alert severity="success">Order deleted successfully</Alert>
+          )}
+
           <Slide direction="up" in={true}>
             <TableContainer>
               <Table aria-label="Orders">
@@ -110,6 +144,9 @@ function Order() {
                         <Link href={`/orders/${order._id}`}>
                           <Button>Details</Button>
                         </Link>
+                        <Button onClick={() => deleteOrderHandler(order)}>
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
