@@ -1,6 +1,4 @@
-import { calcCartSummary } from '../../utils';
 import { PayPalButton } from 'react-paypal-button-v2';
-import Cookies from 'js-cookie';
 
 import { Alert } from '@material-ui/lab';
 import {
@@ -8,15 +6,9 @@ import {
   Button,
   Card,
   CircularProgress,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
   Grid,
   List,
   ListItem,
-  Radio,
-  RadioGroup,
   Slide,
   Table,
   TableBody,
@@ -24,16 +16,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import Router from 'next/router';
 import { useStyles } from '../../utils/styles';
-import CheckoutSteps from '../../components/CheckoutSteps';
 import { Store } from '../../components/Store';
-import { CART_CLEAR } from '../../utils/constants';
 import dynamic from 'next/dynamic';
 import Axios from 'axios';
 import { getResponseError } from '../../utils/error';
@@ -55,6 +44,20 @@ function reducer(state, action) {
       return { ...state, loadingPay: false, errorPay: action.payload };
     case 'ORDER_PAY_RESET':
       return { ...state, loadingPay: false, successPay: false, errorPay: '' };
+
+    case 'ORDER_DELIVER_REQUEST':
+      return { ...state, loadingDeliver: true };
+    case 'ORDER_DELIVER_SUCCESS':
+      return { ...state, loadingDeliver: false, successDeliver: true };
+    case 'ORDER_DELIVER_FAIL':
+      return { ...state, loadingDeliver: false, errorDeliver: action.payload };
+    case 'ORDER_DELIVER_RESET':
+      return {
+        ...state,
+        loadingDeliver: false,
+        successDeliver: false,
+        errorDeliver: '',
+      };
     default:
       return state;
   }
@@ -66,13 +69,26 @@ function Order({ params }) {
 
   const [sdkReady, setSdkReady] = useState(false);
   const [
-    { loading, error, order, loadingPay, errorPay, successPay },
+    {
+      loading,
+      error,
+      order,
+      loadingPay,
+      errorPay,
+      successPay,
+      loadingDeliver,
+      errorDeliver,
+      successDeliver,
+    },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
     loadingPay: false,
     successPay: false,
     errorPay: '',
+    loadingDeliver: false,
+    successDeliver: false,
+    errorDeliver: '',
   });
 
   const { state } = useContext(Store);
@@ -112,7 +128,7 @@ function Order({ params }) {
     if (
       !order ||
       successPay ||
-      // successDeliver ||
+      successDeliver ||
       (order && order._id !== orderId)
     ) {
       fecthOrder();
@@ -127,7 +143,7 @@ function Order({ params }) {
         }
       }
     }
-  }, [order, successPay]);
+  }, [order, successPay, successDeliver]);
 
   const payOrderHandler = async (paymentResult) => {
     dispatch({ type: 'ORDER_PAY_REQUEST' });
@@ -144,7 +160,7 @@ function Order({ params }) {
       dispatch({ type: 'ORDER_PAY_FAIL', payload: getResponseError(error) });
     }
   };
-  const deliverOrderHandler = async (paymentResult) => {
+  const deliverOrderHandler = async () => {
     dispatch({ type: 'ORDER_DELIVER_REQUEST' });
     try {
       const { data } = await Axios.put(
@@ -335,7 +351,12 @@ function Order({ params }) {
                             <Alert severity="error">{errorDeliver}</Alert>
                           )}
                           {loadingDeliver && <CircularProgress />}
-                          <Button onClick={deliverOrderHandler}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={deliverOrderHandler}
+                          >
                             Deliver Order
                           </Button>
                         </ListItem>

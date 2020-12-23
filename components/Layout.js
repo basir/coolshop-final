@@ -105,6 +105,13 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
                       </Link>
                     </NextLink>
                   </MenuItem>
+                  <MenuItem>
+                    <NextLink href="/order-history">
+                      <Link color="primary" href="/order-history">
+                        Order History
+                      </Link>
+                    </NextLink>
+                  </MenuItem>
                 </Menu>
               </>
             ) : (
