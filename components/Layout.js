@@ -15,7 +15,7 @@ import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { theme } from '../utils/styles';
 import { siteName } from '../utils/config';
-import { Menu, MenuItem } from '@material-ui/core';
+import { Badge, Menu, MenuItem } from '@material-ui/core';
 import { useStyles } from '../utils/styles';
 import { Store } from './Store';
 import { USER_SIGN_OUT } from '../utils/constants';
@@ -26,7 +26,7 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
   const classes = useStyles();
 
   const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { userInfo, cart } = state;
   const signoutHandler = () => {
     dispatch({ type: USER_SIGN_OUT });
     Cookies.remove('userInfo');
@@ -89,7 +89,13 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
                   href="/cart"
                   className={classes.link}
                 >
-                  Cart
+                  {cart.cartItems.length > 0 ? (
+                    <Badge badgeContent={cart.cartItems.length} color="primary">
+                      Cart
+                    </Badge>
+                  ) : (
+                    'Cart'
+                  )}
                 </Link>
               </NextLink>
             </nav>
@@ -121,41 +127,45 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
                   </MenuItem>
                   <MenuItem onClick={signoutHandler}>Sign Out</MenuItem>
                 </Menu>
-                <Button
-                  aria-controls="admin-menu"
-                  onClick={adminMenuOpenHandler}
-                >
-                  Admin
-                </Button>
-                <Menu
-                  id="admin-menu"
-                  anchorEl={adminMenuElement}
-                  keepMounted
-                  open={Boolean(adminMenuElement)}
-                  onClose={adminMenuCloseHandler}
-                >
-                  <MenuItem>
-                    <NextLink href="/admin/orders">
-                      <Link color="primary" href="/admin/orders">
-                        Orders
-                      </Link>
-                    </NextLink>
-                  </MenuItem>
-                  <MenuItem>
-                    <NextLink href="/admin/products">
-                      <Link color="primary" href="/admin/products">
-                        Products
-                      </Link>
-                    </NextLink>
-                  </MenuItem>
-                  <MenuItem>
-                    <NextLink href="/admin/users">
-                      <Link color="primary" href="/admin/users">
-                        Users
-                      </Link>
-                    </NextLink>
-                  </MenuItem>
-                </Menu>
+                {userInfo.isAdmin && (
+                  <>
+                    <Button
+                      aria-controls="admin-menu"
+                      onClick={adminMenuOpenHandler}
+                    >
+                      Admin
+                    </Button>
+                    <Menu
+                      id="admin-menu"
+                      anchorEl={adminMenuElement}
+                      keepMounted
+                      open={Boolean(adminMenuElement)}
+                      onClose={adminMenuCloseHandler}
+                    >
+                      <MenuItem>
+                        <NextLink href="/admin/orders">
+                          <Link color="primary" href="/admin/orders">
+                            Orders
+                          </Link>
+                        </NextLink>
+                      </MenuItem>
+                      <MenuItem>
+                        <NextLink href="/admin/products">
+                          <Link color="primary" href="/admin/products">
+                            Products
+                          </Link>
+                        </NextLink>
+                      </MenuItem>
+                      <MenuItem>
+                        <NextLink href="/admin/users">
+                          <Link color="primary" href="/admin/users">
+                            Users
+                          </Link>
+                        </NextLink>
+                      </MenuItem>
+                    </Menu>
+                  </>
+                )}
               </>
             ) : (
               <NextLink href="/signin">

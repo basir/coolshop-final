@@ -10,19 +10,17 @@ import Cookies from 'js-cookie';
 import Axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import Router, { useRouter } from 'next/router';
+import Router from 'next/router';
 import { getResponseError } from '../utils/error';
 import { useStyles } from '../utils/styles';
 import { Store } from '../components/Store';
 import { USER_SIGN_IN } from '../utils/constants';
 import dynamic from 'next/dynamic';
 
-function Signin() {
+function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
-  const { query } = router;
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
 
@@ -148,6 +146,6 @@ function Signin() {
   );
 }
 
-export default dynamic(() => Promise.resolve(Signin), {
+export default dynamic(() => Promise.resolve(Profile), {
   ssr: false,
 });

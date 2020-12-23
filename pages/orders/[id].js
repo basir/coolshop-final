@@ -180,7 +180,7 @@ function Order({ params }) {
   };
 
   return (
-    <Layout title="Place Order">
+    <Layout title="Order Details">
       {loading ? (
         <CircularProgress></CircularProgress>
       ) : error ? (

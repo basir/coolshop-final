@@ -10,20 +10,8 @@ const handler = nextConnect({
 });
 handler.get(async (req, res) => {
   await dbConnect();
-  const seller = await User.findOne({ isSeller: true });
-  if (seller) {
-    const products = data.products.map((product) => ({
-      ...product,
-      seller: seller._id,
-    }));
-    const createdProducts = await Product.insertMany(products);
-    await dbDisconnect();
-    res.send({ createdProducts });
-  } else {
-    await dbDisconnect();
-    res
-      .status(500)
-      .send({ message: 'No seller found. first run /api/users/seed' });
-  }
+  const createdProducts = await Product.insertMany(data.products);
+  await dbDisconnect();
+  res.send({ createdProducts });
 });
 export default handler;
