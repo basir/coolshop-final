@@ -10,8 +10,10 @@ async function connect() {
   }
   if (mongoose.connections.length > 0) {
     connection.isConnected = mongoose.connections[0].readyState;
-    console.log('use pre connection\n----------');
-    return;
+    if (connection.isConnected === 1) {
+      console.log('use pre connection\n----------');
+      return;
+    }
     await mongoose.disconnect();
     console.log('dev disconnected\n----------');
   }
