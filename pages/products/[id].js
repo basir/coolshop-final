@@ -1,33 +1,45 @@
 import React, { useContext, useState } from 'react';
 import Rating from '@material-ui/lab/Rating';
 import { Alert } from '@material-ui/lab';
-import { dbConnect, dbDisconnect } from '../../utils/db';
+import db from '../../utils/db';
 import {
   Box,
   Button,
   Card,
+  CircularProgress,
   Grid,
   List,
   ListItem,
   MenuItem,
   Select,
   Slide,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import Product from '../../models/Product';
 import { useStyles } from '../../utils/styles';
-import { convertDocToObj } from '../../utils/db';
+import { convertDocToObj } from '../../utils/index';
 import Layout from '../../components/Layout';
 import { Store } from '../../components/Store';
 import Router from 'next/router';
 import { CART_ADD_ITEM } from '../../utils/constants';
+import Axios from 'axios';
+import { getResponseError } from '../../utils/error';
+import Link from 'next/link';
 
 export default function Home(props) {
   const classes = useStyles();
 
-  const { dispatch } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
+  const { userInfo } = state;
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+
   const [quantity, setQuantity] = useState(1);
-  const { userInfo, product } = props;
+  const { product } = props;
   const addToCartHandler = () => {
     // add
     dispatch({
@@ -41,6 +53,28 @@ export default function Home(props) {
       },
     });
     Router.push('/cart');
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await Axios.post(
+        `/api/products/${product._id}/reviews`,
+        {
+          rating,
+          comment,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      setLoading(false);
+      alert('Review submitted successfully');
+    } catch (err) {
+      setLoading(false);
+      setError(getResponseError(err));
+    }
   };
 
   return (
@@ -162,13 +196,77 @@ export default function Home(props) {
           </Grid>
         </Grid>
       </Slide>
+      <Box>
+        <Typography id="reviews" component="h2" variant="h2">
+          Reviews
+        </Typography>
+        {product.reviews.length === 0 && <Alert>There is no review</Alert>}
+        <List>
+          {product.reviews.map((review) => (
+            <ListItem key={review._id}>
+              <Box>
+                <p>
+                  <strong>{review.name}</strong>
+                </p>
+                <Rating value={review.rating} readOnly></Rating>
+                <p>{review.createdAt.substring(0, 10)}</p>
+                <p>{review.comment}</p>
+              </Box>
+            </ListItem>
+          ))}
+          <ListItem>
+            {userInfo ? (
+              <form className={classes.form} onSubmit={submitHandler}>
+                <Typography component="h2" variant="h2">
+                  Write a customer review
+                </Typography>
+                <Rating
+                  name="simple-controlled"
+                  onChange={(e) => setRating(e.target.value)}
+                />
+
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Review"
+                  name="review"
+                  type="text"
+                  value={comment}
+                  multiline
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  Submit
+                </Button>
+                <Box>
+                  {loading && <CircularProgress></CircularProgress>}
+                  {error && <Alert severity="error">{error}</Alert>}
+                </Box>
+              </form>
+            ) : (
+              <Alert>
+                Please <Link href="/signin">Sign In</Link> to write a review
+              </Alert>
+            )}
+          </ListItem>
+        </List>
+      </Box>
     </Layout>
   );
 }
 export async function getServerSideProps({ params }) {
-  await dbConnect();
+  await db.connect();
   const productDoc = await Product.findById(params.id).lean();
-  await dbDisconnect();
+  await db.disconnect();
   const product = convertDocToObj(productDoc);
   return {
     props: { product },

@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import { onError } from '../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../utils/db';
+import db from '../../../utils/db';
 import Order from '../../../models/Order';
 import { isAuth } from '../../../utils/auth';
 
@@ -21,9 +21,9 @@ handler.use(isAuth).post(async (req, res) => {
       totalPrice: req.body.totalPrice,
       user: req.user._id,
     });
-    await dbConnect();
+    await db.connect();
     const createdOrder = await order.save();
-    await dbDisconnect();
+    await db.disconnect();
     res.status(201).send({ message: 'New Order Created', order: createdOrder });
   }
 });

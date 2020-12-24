@@ -3,17 +3,17 @@ import bcrypt from 'bcryptjs';
 import User from '../../../models/User';
 import { onError } from '../../../utils/error';
 import { signToken } from '../../../utils/auth';
-import { dbConnect, dbDisconnect } from '../../../utils/db';
+import db from '../../../utils/db';
 
 const handler = nextConnect({
   onError,
 });
 handler.post(async (req, res) => {
-  await dbConnect();
+  await db.connect();
   const signedinUser = await User.findOne({
     email: req.body.email,
   });
-  await dbDisconnect();
+  await db.disconnect();
   if (
     signedinUser &&
     bcrypt.compareSync(req.body.password, signedinUser.password)

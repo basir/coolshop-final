@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import User from '../../../models/User';
 import { signToken } from '../../../utils/auth';
 import { onError } from '../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../utils/db';
+import db from '../../../utils/db';
 
 const handler = nextConnect({
   onError,
@@ -14,9 +14,9 @@ handler.post(async (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
   });
-  await dbConnect();
+  await db.connect();
   const createdUser = await user.save();
-  await dbDisconnect();
+  await db.disconnect();
   if (createdUser) {
     const token = signToken(createdUser);
     res.status(200).json({

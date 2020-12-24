@@ -1,4 +1,4 @@
-import { dbDisconnect } from './db';
+import { disconnect } from './db';
 
 export const getResponseError = (error) =>
   error.response && error.response.data.message
@@ -6,6 +6,6 @@ export const getResponseError = (error) =>
     : error.message;
 
 export const onError = async (err, req, res, next) => {
-  await dbDisconnect();
+  await db.disconnect();
   res.status(500).send({ message: err.toString() });
 };

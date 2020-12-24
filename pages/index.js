@@ -1,8 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import { Alert } from '@material-ui/lab';
+import { Alert, Rating } from '@material-ui/lab';
 import Layout from '../components/Layout';
-import { dbConnect, dbDisconnect, convertDocToObj } from '../utils/db';
+import { convertDocToObj } from '../utils/index';
+import db from '../utils/db';
 import {
   Box,
   Card,
@@ -22,10 +23,10 @@ export default function Home(props) {
 
   return (
     <Layout userInfo={userInfo} title="Home">
+      {products.length === 0 && (
+        <Alert severity="success">No product found</Alert>
+      )}
       <Grid container spacing={1}>
-        {products.length === 0 && (
-          <Alert severity="success">No product found</Alert>
-        )}
         {products.map((product) => (
           <Slide key={product.name} direction="up" in={true}>
             <Grid item md={3}>
@@ -48,8 +49,10 @@ export default function Home(props) {
                         {product.name}
                       </Typography>
                       <Box className={classes.cardFooter}>
+                        <Rating value={product.rating} readOnly></Rating>
+
                         <Typography
-                          variant="body2"
+                          variant="body1"
                           color="textPrimary"
                           component="p"
                         >
@@ -68,11 +71,11 @@ export default function Home(props) {
   );
 }
 export async function getServerSideProps() {
-  await dbConnect();
+  await db.connect();
   const productDocs = await Product.find({}).lean();
-  await dbDisconnect();
+  await db.disconnect();
   const products = productDocs.map(convertDocToObj);
   return {
-    props: { products },
+    props: { products, m: 1 },
   };
 }

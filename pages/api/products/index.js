@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import { onError } from '../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../utils/db';
+import db from '../../../utils/db';
 import Product from '../../../models/Product';
 import { isAuth, isAdmin } from '../../../utils/auth';
 
@@ -10,14 +10,14 @@ const handler = nextConnect({
 handler
   .use(isAuth, isAdmin)
   .get(async (req, res) => {
-    await dbConnect();
+    await db.connect();
     const products = await Product.find({});
-    await dbDisconnect();
+    await db.disconnect();
     res.send(products);
   })
   .use(isAuth, isAdmin)
   .post(async (req, res) => {
-    await dbConnect();
+    await db.connect();
     const product = new Product({
       name: 'sample name ' + Date.now(),
       image: '/images/p1.jpg',
@@ -30,7 +30,7 @@ handler
       description: 'sample description',
     });
     const createdProduct = await product.save();
-    await dbDisconnect();
+    await db.disconnect();
     res.send({ message: 'Product created.', product: createdProduct });
   });
 export default handler;

@@ -1,7 +1,7 @@
 /* next.js head */
 import Head from 'next/head';
-
-import React, { useContext } from 'react';
+import MenuIcon from '@material-ui/icons/Menu';
+import React, { useContext, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,13 +9,23 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 
+import SearchIcon from '@material-ui/icons/Search';
 import NextLink from 'next/link';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { theme } from '../utils/styles';
 import { siteName } from '../utils/config';
-import { Badge, Menu, MenuItem } from '@material-ui/core';
+import {
+  Badge,
+  Drawer,
+  IconButton,
+  InputBase,
+  List,
+  ListItem,
+  Menu,
+  MenuItem,
+} from '@material-ui/core';
 import { useStyles } from '../utils/styles';
 import { Store } from './Store';
 import { USER_SIGN_OUT } from '../utils/constants';
@@ -48,6 +58,17 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
   const adminMenuCloseHandler = () => {
     setAdminMenuElement(null);
   };
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const sidebarCloseHandler = () => {
+    setSidebarOpen(false);
+  };
+
+  const sidebarOpenHandler = () => {
+    setSidebarOpen(true);
+  };
+
   return (
     <React.Fragment>
       <Head>
@@ -69,6 +90,38 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
           className={classes.appBar}
         >
           <Toolbar className={classes.toolbar}>
+            <IconButton aria-label="open sidebar" onClick={sidebarOpenHandler}>
+              <MenuIcon />
+            </IconButton>
+            <Drawer
+              anchor="left"
+              open={sidebarOpen}
+              onClose={sidebarCloseHandler}
+            >
+              <List>
+                <ListItem>
+                  <Typography
+                    gutterBottom
+                    variant="h2"
+                    color="textPrimary"
+                    component="h2"
+                  >
+                    Product Categories
+                  </Typography>
+                </ListItem>
+                <ListItem href="#">
+                  <Link href="/search?category=Shirts">
+                    <Typography>Shirts</Typography>
+                  </Link>
+                </ListItem>
+                <ListItem href="#">
+                  <Link href="/search?category=Pants">
+                    <Typography>Pants</Typography>
+                  </Link>
+                </ListItem>
+              </List>
+            </Drawer>
+
             <NextLink href="/">
               <Link
                 variant="h6"
@@ -80,7 +133,22 @@ export default function Layout({ children, title = 'NextJS Hello' }) {
                 {siteName}
               </Link>
             </NextLink>
-
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <form action="/search">
+                <InputBase
+                  name="name"
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </form>
+            </div>
             <nav>
               <NextLink href="/cart">
                 <Link

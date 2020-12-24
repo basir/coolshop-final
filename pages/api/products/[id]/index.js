@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import { onError } from '../../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../../utils/db';
+import db from '../../../../utils/db';
 import Product from '../../../../models/Product';
 import { isAdmin, isAuth } from '../../../../utils/auth';
 
@@ -10,27 +10,27 @@ const handler = nextConnect({
 handler
   .use(isAuth)
   .get(async (req, res) => {
-    await dbConnect();
+    await db.connect();
     const product = await Product.findById(req.query.id);
-    await dbDisconnect();
+    await db.disconnect();
     res.send(product);
   })
   .use(isAuth, isAdmin)
   .delete(async (req, res) => {
-    await dbConnect();
+    await db.connect();
     const product = await Product.findById(req.query.id);
     if (product) {
       const deletedProduct = await product.remove();
-      await dbDisconnect();
+      await db.disconnect();
       res.send({ message: 'Product Deleted', product: deletedProduct });
     } else {
-      await dbDisconnect();
+      await db.disconnect();
       res.status(404).send({ message: 'Product Not Found' });
     }
   })
   .use(isAuth, isAdmin)
   .put(async (req, res) => {
-    await dbConnect();
+    await db.connect();
     const product = await Product.findById(req.query.id);
     if (product) {
       product.name = req.body.name;
@@ -41,10 +41,10 @@ handler
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
       const updatedProduct = await product.save();
-      await dbDisconnect();
+      await db.disconnect();
       res.send({ message: 'Product Deleted', product: updatedProduct });
     } else {
-      await dbDisconnect();
+      await db.disconnect();
       res.status(404).send({ message: 'Product Not Found' });
     }
   });

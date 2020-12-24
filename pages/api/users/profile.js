@@ -1,18 +1,16 @@
 import nextConnect from 'next-connect';
 import bcrypt from 'bcryptjs';
 import User from '../../../models/User';
-import { signToken } from '../../../utils/auth';
+import { isAuth, signToken } from '../../../utils/auth';
 import { onError } from '../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../utils/db';
+import db from '../../../utils/db';
 
 const handler = nextConnect({
   onError,
 });
-handler.put(async (req, res) => {
-  await dbConnect();
-  const user = await User.findOne({
-    email: req.body.email,
-  });
+handler.use(isAuth).put(async (req, res) => {
+  await db.connect();
+  const user = await User.findById(req.user._id);
 
   if (user) {
     user.name = req.body.name;
@@ -21,7 +19,7 @@ handler.put(async (req, res) => {
       user.password = bcrypt.hashSync(req.body.password, 8);
     }
     const updatedUser = await user.save();
-    await dbDisconnect();
+    await db.disconnect();
     const token = signToken(updatedUser);
     res.status(200).json({
       success: true,
@@ -31,7 +29,7 @@ handler.put(async (req, res) => {
       token: token,
     });
   } else {
-    await dbDisconnect();
+    await db.disconnect();
     res.status(404).send({ message: 'User not found' });
   }
 });

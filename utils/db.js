@@ -1,37 +1,41 @@
 /* This is a database connection function*/
 import mongoose from 'mongoose';
-
 const connection = {}; /* creating connection object*/
 
-export const dbConnect = async () => {
+async function connect() {
   /* check if we have connection to our databse*/
   if (connection.isConnected) {
+    console.log('already connected');
     return;
   }
-
-  /* connecting to our database.  */
+  if (mongoose.connections.length > 0) {
+    connection.isConnected = mongoose.connections[0].readyState;
+    console.log('use pre connection\n----------');
+    return;
+    await mongoose.disconnect();
+    console.log('dev disconnected\n----------');
+  }
+  /* connecting to our database */
   const db = await mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
-
+  console.log('----------\nnew connection');
   connection.isConnected = db.connections[0].readyState;
-};
+}
 
-export const dbDisconnect = async () => {
-  console.log(process.env.NODE_ENV);
-  if (process.env.NODE_ENV === 'production') {
-    if (connection.isConnected) {
-      connection.isConnected = false;
+async function disconnect() {
+  /* check if we have connection to our databse*/
+  if (connection.isConnected) {
+    const testProd = false;
+    if (process.env.NODE_ENV === 'production' || testProd) {
       await mongoose.disconnect();
+      console.log('disconnected\n----------');
+      connection.isConnected = false;
+    } else {
+      console.log('not disconnected');
     }
   }
-};
-
-export const convertDocToObj = (doc) => {
-  doc._id = doc._id.toString();
-  doc.createdAt = doc.createdAt.toString();
-  doc.updatedAt = doc.updatedAt.toString();
-  return doc;
-};
+}
+export default { connect, disconnect };

@@ -116,7 +116,7 @@ function Signin() {
           name="password"
           label="Confirm Password"
           type="password"
-          id="password"
+          id="confirmPassword"
           autoComplete="current-password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}

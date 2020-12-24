@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import { onError } from '../../../../utils/error';
-import { dbConnect, dbDisconnect } from '../../../../utils/db';
+import db from '../../../../utils/db';
 import Order from '../../../../models/Order';
 import { isAuth } from '../../../../utils/auth';
 
@@ -8,7 +8,7 @@ const handler = nextConnect({
   onError,
 });
 handler.use(isAuth).put(async (req, res) => {
-  await dbConnect();
+  await db.connect();
   const order = await Order.findById(req.query.id);
   if (order) {
     order.isPaid = true;
@@ -20,10 +20,10 @@ handler.use(isAuth).put(async (req, res) => {
       email_address: req.body.email_address,
     };
     const updatedOrder = await order.save();
-    await dbDisconnect();
+    await db.disconnect();
     res.send({ message: 'Order Paid', order: updatedOrder });
   } else {
-    await dbDisconnect();
+    await db.disconnect();
     res.status(404).send({ message: 'Order Not Found' });
   }
 });
