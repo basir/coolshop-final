@@ -12,6 +12,8 @@ handler.use(isAuth).post(async (req, res) => {
   const product = await Product.findById(req.query.id);
   if (product) {
     if (product.reviews.find((x) => x.name === req.user.name)) {
+
+      await db.disconnect();
       return res
         .status(400)
         .send({ message: 'You already submitted a review' });
@@ -27,11 +29,15 @@ handler.use(isAuth).post(async (req, res) => {
       product.reviews.reduce((a, c) => c.rating + a, 0) /
       product.reviews.length;
     const updatedProduct = await product.save();
+
+      await db.disconnect();
     res.status(201).send({
       message: 'Review Created',
       review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
     });
   } else {
+
+      await db.disconnect();
     res.status(404).send({ message: 'Product Not Found' });
   }
 });

@@ -66,16 +66,16 @@ export const useStyles = makeStyles((theme) => ({
     margin: '0 auto',
   },
   mt1: {
-    marginTop: '1rem',
+    marginTop: '1rem !important',
   },
   p1: {
-    padding: '1rem',
+    padding: '1rem !important',
   },
   m1: {
-    margin: '1rem',
+    margin: '1rem !important',
   },
   p0: {
-    padding: '0',
+    padding: '0 !important',
   },
   // search
   search: {
@@ -106,9 +106,9 @@ export const useStyles = makeStyles((theme) => ({
     color: 'inherit',
   },
   inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
+    padding: `${theme.spacing(1, 1, 1, 0)}`,
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)!important`,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
