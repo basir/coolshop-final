@@ -74,15 +74,17 @@ function Checkout(props) {
         type: 'cart',
       });
       setCheckoutToken(token);
-      fetchShippingCountries();
+      fetchShippingCountries(token.id);
     } else {
       Router.push('/cart');
     }
   };
 
-  const fetchShippingCountries = async () => {
+  const fetchShippingCountries = async (checkoutTokenId) => {
     const commerce = getCommerce(props.commercePublicKey);
-    const countries = await commerce.services.localeListCountries();
+    const countries = await commerce.services.localeListShippingCountries(
+      checkoutTokenId
+    );
     setShippingCountries(countries.countries);
   };
 
