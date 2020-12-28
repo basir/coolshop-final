@@ -70,12 +70,10 @@ export default function Home(props) {
 
 export async function getStaticProps() {
   const commerce = getCommerce();
-  // const merchant = await commerce.merchants.about();
   const { data: products } = await commerce.products.list();
 
   return {
     props: {
-      // merchant,
       products,
     },
   };

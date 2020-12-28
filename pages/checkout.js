@@ -1,23 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import getCommerce from '../utils/commerce';
-
-import Link from 'next/link';
-import { Alert } from '@material-ui/lab';
 import Layout from '../components/Layout';
 import {
-  Box,
   Button,
   Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
   CircularProgress,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-  Slide,
   Step,
   StepLabel,
   Stepper,
@@ -28,8 +20,9 @@ import { useStyles } from '../utils/styles';
 import { Store } from '../components/Store';
 import Router from 'next/router';
 import { ORDER_SET } from '../utils/constants';
-
-export default function Home(props) {
+import dynamic from 'next/dynamic';
+const dev = process.env.NODE_ENV === 'development';
+function Checkout(props) {
   const classes = useStyles();
 
   const { state, dispatch } = useContext(Store);
@@ -37,22 +30,30 @@ export default function Home(props) {
 
   const [checkoutToken, setCheckoutToken] = useState({});
   // Customer details
-  const [firstName, setFirstName] = useState('Jane');
-  const [lastName, setLastName] = useState('Doe');
-  const [email, setEmail] = useState('janedoe@email.com');
+  const [firstName, setFirstName] = useState(dev ? 'Jane' : '');
+  const [lastName, setLastName] = useState(dev ? 'Doe' : '');
+  const [email, setEmail] = useState(dev ? 'janedoe@email.com' : '');
   // Shipping details
-  const [shippingName, setShippingName] = useState('Jane Doe');
-  const [shippingStreet, setShippingStreet] = useState('123 Fake St');
-  const [shippingCity, setShippingCity] = useState('Los Angeles');
-  const [shippingStateProvince, setShippingStateProvince] = useState('AR');
-  const [shippingPostalZipCode, setShippingPostalZipCode] = useState('90089');
-  const [shippingCountry, setShippingCountry] = useState('GB');
+  const [shippingName, setShippingName] = useState(dev ? 'Jane Doe' : '');
+  const [shippingStreet, setShippingStreet] = useState(
+    dev ? '123 Fake St' : ''
+  );
+  const [shippingCity, setShippingCity] = useState(dev ? 'Los Angeles' : '');
+  const [shippingStateProvince, setShippingStateProvince] = useState(
+    dev ? 'AR' : ''
+  );
+  const [shippingPostalZipCode, setShippingPostalZipCode] = useState(
+    dev ? '90089' : ''
+  );
+  const [shippingCountry, setShippingCountry] = useState(dev ? 'GB' : '');
   // Payment details
-  const [cardNum, setCardNum] = useState('4242 4242 4242 4242');
-  const [expMonth, setExpMonth] = useState('11');
-  const [expYear, setExpYear] = useState('2023');
-  const [cvv, setCvv] = useState('123');
-  const [billingPostalZipcode, setBillingPostalZipcode] = useState('90089');
+  const [cardNum, setCardNum] = useState(dev ? '4242 4242 4242 4242' : '');
+  const [expMonth, setExpMonth] = useState(dev ? '11' : '');
+  const [expYear, setExpYear] = useState(dev ? '2023' : '');
+  const [cvv, setCvv] = useState(dev ? '123' : '');
+  const [billingPostalZipcode, setBillingPostalZipcode] = useState(
+    dev ? '90089' : ''
+  );
   // Shipping and fulfillment data
   const [shippingCountries, setShippingCountries] = useState({});
   const [shippingSubdivisions, setShippingSubdivisions] = useState({});
@@ -108,6 +109,7 @@ export default function Home(props) {
     const shippingOption = options[0] ? options[0].id : null;
     setShippingOption(shippingOption);
     setShippingOptions(options);
+    console.log(shippingOption);
   };
 
   const handleShippingCountryChange = (e) => {
@@ -128,8 +130,7 @@ export default function Home(props) {
     console.log(currentValue);
   };
 
-  const handleCaptureCheckout = async (e) => {
-    // e.preventDefault();
+  const handleCaptureCheckout = async () => {
     const orderData = {
       line_items: checkoutToken.live.line_items,
       customer: {
@@ -184,7 +185,7 @@ export default function Home(props) {
       });
   };
 
-  const [activeStep, setActiveStep] = React.useState(1);
+  const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
 
   const handleNext = () => {
@@ -506,16 +507,6 @@ export default function Home(props) {
     </Layout>
   );
 }
-
-export async function getStaticProps() {
-  const commerce = getCommerce();
-  // const merchant = await commerce.merchants.about();
-  const { data: products } = await commerce.products.list();
-
-  return {
-    props: {
-      // merchant,
-      products,
-    },
-  };
-}
+export default dynamic(() => Promise.resolve(Checkout), {
+  ssr: false,
+});

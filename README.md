@@ -1,7 +1,6 @@
-# Coolshop - An ECommerce website powered by CommerceJS and NextJS
-
-In this course I teach you how to build an ecommerce ECommerce website powered by CommerceJS and NextJS.
-
+# Coolshop
+  An ECommerce website powered by CommerceJS and NextJS
+ 
 ## Run Locally
 
 ### 1. Clone repo
@@ -11,16 +10,14 @@ $ git clone git@github.com:basir/coolshop-final.git
 $ cd coolshop-final
 ```
 
-### 2. Setup MongoDB
+### 2. Get CommerceJS keys
+Create account on [CommerceJS](http://commercejs.com/) website and get your api keys.
 
-- Local MongoDB
-  - Install it from [here](https://www.mongodb.com/try/download/community)
-  - Create .env file in root folder
-  - Set MONGODB_URL=mongodb://localhost/coolshop-final  
-- Atlas Cloud MongoDB
-  - Create database at [https://cloud.mongodb.com](https://cloud.mongodb.com)
-  - Create .env file in root folder
-  - Set MONGODB_URL=mongodb+srv://your-db-connection
+### 3. Create .env file
+```
+COMMERCE_PUBLIC_KEY_LIVE=pk_xxx
+COMMERCE_SECRET_KEY_LIVE=sk_xxx
+```
 
 ### 3. Install NPM Packages
 
@@ -33,15 +30,30 @@ $ npm install
 ```
 $ npm run dev
 ```
+### 6. Open ecommerce website
+Open [http://localhost:3000](http://localhost:3000)
 
-### 5. Seed Users and Products
+## Use Ecommerce Website
 
-- Run this on chrome: http://localhost:3000/api/users/seed
-- It returns admin email (admin@example.com) and password (1234)
-- Run this on chrome: http://localhost:3000/api/products/seed
-- It creates 6 sample products
+### 1. Create product
+Create a product on [CommerceJS dashboard](https://dashboard.chec.io/products).
+ - Set SHIPPING OPTIONS to enabled
+ - Set Domestic (United States) to enabled
 
-### 6. Admin Login
+### 2. Place an order
+- open website on http://localhost:3000
+- select one product
+- add to cart
+- proceed to checkout
+- confirm order
+- 
+### 3. Check order
+- open admin dashboard on https://dashboard.chec.io/orders
+- find the last order
+- check email to see the order
 
-- Run http://localhost:3000/signin
-- Enter admin email and password and click signin
+
+## Deploy on vercel
+
+### 1. Create vercel account
+- open 

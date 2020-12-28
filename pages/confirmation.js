@@ -19,7 +19,7 @@ import {
 import { useStyles } from '../utils/styles';
 import dynamic from 'next/dynamic';
 
-function Cart(props) {
+function Confirmation(props) {
   const classes = useStyles();
   const { state } = useContext(Store);
   const { order } = state;
@@ -188,6 +188,6 @@ function Cart(props) {
     </Layout>
   );
 }
-export default dynamic(() => Promise.resolve(Cart), {
+export default dynamic(() => Promise.resolve(Confirmation), {
   ssr: false,
 });
