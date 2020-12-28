@@ -5,6 +5,7 @@ import { Store } from '../components/Store';
 import {
   Button,
   Card,
+  CircularProgress,
   Grid,
   List,
   ListItem,
@@ -20,47 +21,38 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useStyles } from '../utils/styles';
-import { calcCartSummary } from '../utils';
-import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../utils/constants';
+import { CART_RETRIEVE_SUCCESS } from '../utils/constants';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Router from 'next/router';
+import getCommerce from '../utils/commerce';
 
 function Cart(props) {
   const classes = useStyles();
-  const { userInfo } = props;
   const { state, dispatch } = useContext(Store);
-  const { cartItems } = state.cart;
-  const { itemsCount, itemsPrice } = calcCartSummary(cartItems);
+  const { cart } = state;
 
-  const removeFromCartHandler = (product) => {
-    dispatch({
-      type: CART_REMOVE_ITEM,
-      payload: product,
-    });
+  const removeFromCartHandler = async (lineItem) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const cartData = await commerce.cart.remove(lineItem.id);
+    dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
   };
-  const quantityChangeHandler = (cartItem, quantity) => {
-    dispatch({
-      type: CART_ADD_ITEM,
-      payload: {
-        name: cartItem.name,
-        image: cartItem.image,
-        price: cartItem.price,
-        countInStock: cartItem.countInStock,
-        quantity,
-      },
+  const quantityChangeHandler = async (lineItem, quantity) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const cartData = await commerce.cart.update(lineItem.id, {
+      quantity,
     });
+    dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
   };
 
   const proccessToCheckout = () => {
-    Router.push({
-      pathname: '/signin',
-      query: { redirect: 'shipping' },
-    });
+    Router.push('/checkout');
   };
   return (
-    <Layout userInfo={userInfo} title="Shopping Cart">
-      {cartItems.length === 0 ? (
+    <Layout commercePublicKey={props.commercePublicKey} title="Shopping Cart">
+      {cart.loading ? (
+        <CircularProgress />
+      ) : cart.data.line_items.length === 0 ? (
         <Alert icon={false} severity="error">
           Cart is empty. <Link href="/">Go shopping</Link>
         </Alert>
@@ -84,14 +76,9 @@ function Cart(props) {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {cartItems.map((cartItem) => (
+                        {cart.data.line_items.map((cartItem) => (
                           <TableRow key={cartItem.name}>
                             <TableCell component="th" scope="row">
-                              <img
-                                className={classes.smallImage}
-                                alt={cartItem.name}
-                                src={cartItem.image}
-                              ></img>
                               {cartItem.name}
                             </TableCell>
                             <TableCell align="right">
@@ -107,17 +94,15 @@ function Cart(props) {
                                 }
                                 value={cartItem.quantity}
                               >
-                                {[...Array(cartItem.countInStock).keys()].map(
-                                  (x) => (
-                                    <MenuItem key={x + 1} value={x + 1}>
-                                      {x + 1}
-                                    </MenuItem>
-                                  )
-                                )}
+                                {[...Array(10).keys()].map((x) => (
+                                  <MenuItem key={x + 1} value={x + 1}>
+                                    {x + 1}
+                                  </MenuItem>
+                                ))}
                               </Select>
                             </TableCell>
                             <TableCell align="right">
-                              {cartItem.price}
+                              {cartItem.price.formatted_with_symbol}
                             </TableCell>
 
                             <TableCell align="right">
@@ -142,12 +127,12 @@ function Cart(props) {
                     <ListItem>
                       <Grid container>
                         <Typography variant="h6">
-                          Subtotal ({itemsCount} items) ${itemsPrice}
+                          Subtotal: {cart.data.subtotal.formatted_with_symbol}
                         </Typography>
                       </Grid>
                     </ListItem>
                     <ListItem>
-                      {cartItems.length > 0 && (
+                      {cart.data.total_items > 0 && (
                         <Button
                           type="button"
                           fullWidth

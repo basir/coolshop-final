@@ -1,1 +1,1 @@
-export const siteName = 'NextJS Ecommerce';
+export const siteName = 'Coolshop';

@@ -1,30 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Coolshop - An ECommerce website powered by CommerceJS and NextJS
 
-## Getting Started.
+In this course I teach you how to build an ecommerce ECommerce website powered by CommerceJS and NextJS.
 
-First, run the development server:
+## Run Locally
 
-```bash
-npm run dev
-# or
-yarn dev
+### 1. Clone repo
+
+```
+$ git clone git@github.com:basir/coolshop-final.git
+$ cd coolshop-final
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Setup MongoDB
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- Local MongoDB
+  - Install it from [here](https://www.mongodb.com/try/download/community)
+  - Create .env file in root folder
+  - Set MONGODB_URL=mongodb://localhost/coolshop-final  
+- Atlas Cloud MongoDB
+  - Create database at [https://cloud.mongodb.com](https://cloud.mongodb.com)
+  - Create .env file in root folder
+  - Set MONGODB_URL=mongodb+srv://your-db-connection
 
-## Learn More
+### 3. Install NPM Packages
 
-To learn more about Next.js, take a look at the following resources:
+```
+$ npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Run Application
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
+$ npm run dev
+```
 
-## Deploy on Vercel
+### 5. Seed Users and Products
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Run this on chrome: http://localhost:3000/api/users/seed
+- It returns admin email (admin@example.com) and password (1234)
+- Run this on chrome: http://localhost:3000/api/products/seed
+- It creates 6 sample products
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 6. Admin Login
+
+- Run http://localhost:3000/signin
+- Enter admin email and password and click signin

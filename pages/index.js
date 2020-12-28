@@ -1,9 +1,9 @@
 import React from 'react';
+import getCommerce from '../utils/commerce';
+
 import Link from 'next/link';
-import { Alert, Rating } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import Layout from '../components/Layout';
-import { convertDocToObj } from '../utils/index';
-import db from '../utils/db';
 import {
   Box,
   Card,
@@ -14,29 +14,28 @@ import {
   Slide,
   Typography,
 } from '@material-ui/core';
-import Product from '../models/Product';
 import { useStyles } from '../utils/styles';
 
 export default function Home(props) {
   const classes = useStyles();
-  const { userInfo, products } = props;
+  const { products } = props;
 
   return (
-    <Layout userInfo={userInfo} title="Home">
+    <Layout title="Home" commercePublicKey={props.commercePublicKey}>
       {products.length === 0 && (
         <Alert severity="success">No product found</Alert>
       )}
       <Grid container spacing={1}>
         {products.map((product) => (
-          <Slide key={product.name} direction="up" in={true}>
+          <Slide key={product.id} direction="up" in={true}>
             <Grid item md={3}>
               <Card className={classes.card}>
-                <Link href={`/products/${product._id}`}>
+                <Link href={`/products/${product.permalink}`}>
                   <CardActionArea>
                     <CardMedia
                       component="img"
                       alt={product.name}
-                      image={product.image}
+                      image={product.media.source}
                       className={classes.media}
                     />
                     <CardContent>
@@ -49,14 +48,12 @@ export default function Home(props) {
                         {product.name}
                       </Typography>
                       <Box className={classes.cardFooter}>
-                        <Rating value={product.rating} readOnly></Rating>
-
                         <Typography
                           variant="body1"
                           color="textPrimary"
                           component="p"
                         >
-                          ${product.price}
+                          {product.price.formatted_with_symbol}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -70,12 +67,16 @@ export default function Home(props) {
     </Layout>
   );
 }
-export async function getServerSideProps() {
-  await db.connect();
-  const productDocs = await Product.find({}).lean();
-  await db.disconnect();
-  const products = productDocs.map(convertDocToObj);
+
+export async function getStaticProps() {
+  const commerce = getCommerce();
+  // const merchant = await commerce.merchants.about();
+  const { data: products } = await commerce.products.list();
+
   return {
-    props: { products, m: 1 },
+    props: {
+      // merchant,
+      products,
+    },
   };
 }
