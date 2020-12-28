@@ -8,6 +8,8 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  List,
+  ListItem,
   MenuItem,
   Select,
   Step,
@@ -21,7 +23,7 @@ import { Store } from '../components/Store';
 import Router from 'next/router';
 import { ORDER_SET } from '../utils/constants';
 import dynamic from 'next/dynamic';
-const dev = process.env.NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development' || true; // remove "|| true" in production
 function Checkout(props) {
   const classes = useStyles();
 
@@ -217,7 +219,6 @@ function Checkout(props) {
               id="firstName"
               label="First Name"
               name="firstName"
-              autoComplete="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
@@ -229,7 +230,6 @@ function Checkout(props) {
               id="lastName"
               label="Last Name"
               name="lastName"
-              autoComplete="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
@@ -241,7 +241,6 @@ function Checkout(props) {
               id="email"
               label="Email"
               name="email"
-              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -256,9 +255,8 @@ function Checkout(props) {
               required
               fullWidth
               id="shippingName"
-              label="shippingName"
-              name="shippingName"
-              autoComplete="shippingName"
+              label="Full Name"
+              name="name"
               value={shippingName}
               onChange={(e) => setShippingName(e.target.value)}
             />
@@ -268,9 +266,8 @@ function Checkout(props) {
               required
               fullWidth
               id="shippingStreet"
-              label="shippingStreet"
-              name="shippingStreet"
-              autoComplete="shippingStreet"
+              label="Street"
+              name="address"
               value={shippingStreet}
               onChange={(e) => setShippingStreet(e.target.value)}
             />
@@ -280,9 +277,8 @@ function Checkout(props) {
               required
               fullWidth
               id="shippingCity"
-              label="shippingCity"
-              name="shippingCity"
-              autoComplete="shippingCity"
+              label="City"
+              name="city"
               value={shippingCity}
               onChange={(e) => setShippingCity(e.target.value)}
             />
@@ -292,9 +288,8 @@ function Checkout(props) {
               required
               fullWidth
               id="shippingPostalZipCode"
-              label="shippingPostalZipCode"
-              name="shippingPostalZipCode"
-              autoComplete="shippingPostalZipCode"
+              label="Postal/Zip Code"
+              name="postalCode"
               value={shippingPostalZipCode}
               onChange={(e) => setShippingPostalZipCode(e.target.value)}
             />
@@ -323,7 +318,7 @@ function Checkout(props) {
               <Select
                 labelId="shippingStateProvince-label"
                 id="shippingStateProvince"
-                label="StateProvince"
+                label="State/Province"
                 fullWidth
                 onChange={handleSubdivisionChange}
                 value={shippingStateProvince}
@@ -343,7 +338,7 @@ function Checkout(props) {
               <Select
                 labelId="shippingOption-label"
                 id="shippingOption"
-                label="shippingOption"
+                label="Shipping Option"
                 fullWidth
                 onChange={handleShippingOptionChange}
                 value={shippingOption}
@@ -369,9 +364,8 @@ function Checkout(props) {
               required
               fullWidth
               id="cardNum"
-              label="cardNum"
+              label="Card Number"
               name="cardNum"
-              autoComplete="cardNum"
               value={cardNum}
               onChange={(e) => setCardNum(e.target.value)}
             />
@@ -381,9 +375,8 @@ function Checkout(props) {
               required
               fullWidth
               id="expMonth"
-              label="expMonth"
+              label="Expiry Month"
               name="expMonth"
-              autoComplete="expMonth"
               value={expMonth}
               onChange={(e) => setExpMonth(e.target.value)}
             />
@@ -393,9 +386,8 @@ function Checkout(props) {
               required
               fullWidth
               id="expYear"
-              label="expYear"
+              label="Expiry Year"
               name="expYear"
-              autoComplete="expYear"
               value={expYear}
               onChange={(e) => setExpYear(e.target.value)}
             />
@@ -405,11 +397,21 @@ function Checkout(props) {
               required
               fullWidth
               id="cvv"
-              label="cvv"
+              label="CVV"
               name="cvv"
-              autoComplete="shicvvppingPostalZipCode"
               value={cvv}
               onChange={(e) => setCvv(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="billingPostalZipcode"
+              label="Postal/Zip Code"
+              name="postalCode"
+              value={billingPostalZipcode}
+              onChange={(e) => setBillingPostalZipcode(e.target.value)}
             />
           </>
         );
@@ -466,23 +468,38 @@ function Checkout(props) {
   const renderCheckoutSummary = () => {
     return (
       <>
-        <div className="checkout__summary">
-          <h4>Order summary</h4>
+        <List>
+          <ListItem>
+            <Typography variant="h2">Order summary</Typography>
+          </ListItem>
+
           {cart.data.line_items.map((lineItem) => (
-            <div key={lineItem.id} className="checkout__summary-details">
-              <p>
-                {lineItem.quantity} x {lineItem.name}
-              </p>
-              <p>{lineItem.line_total.formatted_with_symbol}</p>
-            </div>
+            <ListItem key={lineItem.id}>
+              <Grid container>
+                <Grid xs={6} item>
+                  {lineItem.quantity} x {lineItem.name}
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography align="right">
+                    {lineItem.line_total.formatted_with_symbol}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </ListItem>
           ))}
-          <div>
-            <p>
-              <span>Subtotal:</span>
-              {cart.data.subtotal.formatted_with_symbol}
-            </p>
-          </div>
-        </div>
+          <ListItem>
+            <Grid container>
+              <Grid xs={6} item>
+                Subtotal
+              </Grid>
+              <Grid xs={6} item>
+                <Typography align="right">
+                  {cart.data.subtotal.formatted_with_symbol}
+                </Typography>
+              </Grid>
+            </Grid>
+          </ListItem>
+        </List>
       </>
     );
   };
@@ -500,7 +517,7 @@ function Checkout(props) {
             <Card className={classes.p1}>{renderCheckoutForm()}</Card>
           </Grid>
           <Grid item md={4}>
-            <Card className={classes.p1}>{renderCheckoutSummary()}</Card>
+            <Card>{renderCheckoutSummary()}</Card>
           </Grid>
         </Grid>
       )}
