@@ -14,10 +14,8 @@ import {
   Slide,
   Typography,
 } from '@material-ui/core';
-import { useStyles } from '../utils/styles';
 
 export default function Home(props) {
-  const classes = useStyles();
   const { products } = props;
 
   return (
@@ -29,14 +27,13 @@ export default function Home(props) {
         {products.map((product) => (
           <Slide key={product.id} direction="up" in={true}>
             <Grid item md={3}>
-              <Card className={classes.card}>
+              <Card>
                 <Link href={`/products/${product.permalink}`}>
                   <CardActionArea>
                     <CardMedia
                       component="img"
                       alt={product.name}
                       image={product.media.source}
-                      className={classes.media}
                     />
                     <CardContent>
                       <Typography
@@ -47,7 +44,7 @@ export default function Home(props) {
                       >
                         {product.name}
                       </Typography>
-                      <Box className={classes.cardFooter}>
+                      <Box>
                         <Typography
                           variant="body1"
                           color="textPrimary"

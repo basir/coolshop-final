@@ -83,7 +83,7 @@ export default function Home(props) {
             </List>
           </Grid>
           <Grid item md={3} xs={12}>
-            <Card className={classes.card}>
+            <Card>
               <List>
                 <ListItem>
                   <Grid container>
@@ -121,7 +121,7 @@ export default function Home(props) {
                         <Grid item xs={6}>
                           Quantity
                         </Grid>
-                        <Grid item xs={6} className={classes.textRight}>
+                        <Grid item xs={6}>
                           <Select
                             labelId="quanitity-label"
                             id="quanitity"
