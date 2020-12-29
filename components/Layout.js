@@ -1,29 +1,18 @@
 /* next.js head */
 import Head from 'next/head';
-import MenuIcon from '@material-ui/icons/Menu';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-
-import SearchIcon from '@material-ui/icons/Search';
 import NextLink from 'next/link';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { theme } from '../utils/styles';
 import { siteName } from '../utils/config';
-import {
-  Badge,
-  CircularProgress,
-  Drawer,
-  IconButton,
-  InputBase,
-  List,
-  ListItem,
-} from '@material-ui/core';
+import { Badge, CircularProgress } from '@material-ui/core';
 import { useStyles } from '../utils/styles';
 import { Store } from './Store';
 import {
@@ -51,16 +40,6 @@ export default function Layout({
     };
     fetchCart();
   }, []);
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const sidebarCloseHandler = () => {
-    setSidebarOpen(false);
-  };
-
-  const sidebarOpenHandler = () => {
-    setSidebarOpen(true);
-  };
 
   return (
     <React.Fragment>
@@ -126,7 +105,7 @@ export default function Layout({
           <Box mt={5}>
             <Typography variant="body2" color="textSecondary" align="center">
               {'© '}
-              {siteName} {new Date().getFullYear()}
+              {siteName} 2021
               {'.'}
             </Typography>
           </Box>

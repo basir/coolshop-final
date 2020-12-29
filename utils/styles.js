@@ -1,4 +1,4 @@
-import { createMuiTheme, fade, makeStyles } from '@material-ui/core';
+import { createMuiTheme, makeStyles } from '@material-ui/core';
 export const theme = createMuiTheme({
   typography: {
     h1: {
@@ -49,35 +49,15 @@ export const useStyles = makeStyles((theme) => ({
   main: {
     padding: '1rem',
   },
-  submit: {
-    margin: '1rem 0 1rem 0',
-  },
-  smallImage: {
-    width: '3rem',
-  },
   largeImage: {
     maxWidth: '50rem',
     width: '100%',
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  center: {
-    margin: '0 auto',
-    textAlign: 'center',
-  },
-  form: {
-    maxWidth: '60rem',
-    margin: '0 auto',
   },
   mt1: {
     marginTop: '1rem !important',
   },
   p1: {
     padding: '1rem !important',
-  },
-  m1: {
-    margin: '1rem !important',
   },
   formControl: {
     margin: theme.spacing(1),

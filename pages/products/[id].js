@@ -3,6 +3,7 @@ import { Alert } from '@material-ui/lab';
 import getCommerce from '../../utils/commerce';
 
 import {
+  Box,
   Button,
   Card,
   Grid,
@@ -75,9 +76,9 @@ export default function Home(props) {
                 </Typography>
               </ListItem>
               <ListItem>
-                <div
+                <Box
                   dangerouslySetInnerHTML={{ __html: product.description }}
-                ></div>
+                ></Box>
               </ListItem>
             </List>
           </Grid>

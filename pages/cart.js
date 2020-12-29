@@ -85,7 +85,6 @@ function Cart(props) {
                               <Select
                                 labelId="quanitity-label"
                                 id="quanitity"
-                                className={classes.fullWidth}
                                 onChange={(e) =>
                                   quantityChangeHandler(
                                     cartItem,

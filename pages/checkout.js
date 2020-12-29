@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import getCommerce from '../utils/commerce';
 import Layout from '../components/Layout';
 import {
+  Box,
   Button,
   Card,
   CircularProgress,
@@ -23,6 +24,7 @@ import { Store } from '../components/Store';
 import Router from 'next/router';
 import { ORDER_SET } from '../utils/constants';
 import dynamic from 'next/dynamic';
+import { Alert } from '@material-ui/lab';
 const dev = process.env.NODE_ENV === 'development' || true; // remove "|| true" in production
 function Checkout(props) {
   const classes = useStyles();
@@ -30,6 +32,7 @@ function Checkout(props) {
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
 
+  const [errors, setErrors] = useState([]);
   const [checkoutToken, setCheckoutToken] = useState({});
   // Customer details
   const [firstName, setFirstName] = useState(dev ? 'Jane' : '');
@@ -166,12 +169,23 @@ function Checkout(props) {
     };
 
     const commerce = getCommerce(props.commercePublicKey);
-    const order = await commerce.checkout.capture(checkoutToken.id, orderData);
-    dispatch({ type: ORDER_SET, payload: order });
-
-    localStorage.setItem('order_receipt', JSON.stringify(order));
-    await refreshCart();
-    Router.push('/confirmation');
+    try {
+      const order = await commerce.checkout.capture(
+        checkoutToken.id,
+        orderData
+      );
+      dispatch({ type: ORDER_SET, payload: order });
+      localStorage.setItem('order_receipt', JSON.stringify(order));
+      await refreshCart();
+      Router.push('/confirmation');
+    } catch (err) {
+      const errList = [err.data.error.message];
+      const errs = err.data.error.errors;
+      for (const index in errs) {
+        errList.push(`${index}: ${errs[index]}`);
+      }
+      setErrors(errList);
+    }
   };
 
   const refreshCart = async () => {
@@ -201,6 +215,7 @@ function Checkout(props) {
   };
 
   const handleBack = () => {
+    setErrors([]);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -432,18 +447,35 @@ function Checkout(props) {
             </Step>
           ))}
         </Stepper>
-        <div>
+        <Box>
           {activeStep === steps.length ? (
-            <div>
-              <CircularProgress />
-              <Typography className={classes.instructions}>
-                Confirming Order...
-              </Typography>
-            </div>
+            errors && errors.length > 0 ? (
+              <Box>
+                <List>
+                  {errors.map((error) => (
+                    <ListItem key={error}>
+                      <Alert severity="error">{error}</Alert>
+                    </ListItem>
+                  ))}
+                </List>
+                <Box className={classes.mt1}>
+                  <Button onClick={handleBack} className={classes.button}>
+                    Back
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <Box>
+                <CircularProgress />
+                <Typography className={classes.instructions}>
+                  Confirming Order...
+                </Typography>
+              </Box>
+            )
           ) : (
-            <div>
+            <Box>
               {getStepContent(activeStep)}
-              <div className={classes.mt1}>
+              <Box className={classes.mt1}>
                 <Button
                   disabled={activeStep === 0}
                   onClick={handleBack}
@@ -459,10 +491,10 @@ function Checkout(props) {
                 >
                   {activeStep === steps.length - 1 ? 'Confirm Order' : 'Next'}
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
-        </div>
+        </Box>
       </form>
     );
   };
